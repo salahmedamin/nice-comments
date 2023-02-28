@@ -1,0 +1,7 @@
+.editor {
+  box-sizing: border-box;
+  cursor: text;
+  padding: 16px;
+  color: white;
+  position: relative
+}

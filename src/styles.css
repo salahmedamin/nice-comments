@@ -1,0 +1,12 @@
+body {
+  font-family: "Inter", sans-serif;
+  background: #2d2d2d;
+  margin: 0;
+}
+.public-DraftEditorPlaceholder-root {
+  color: rgb(186, 186, 193);
+  padding-top: 3px;
+  padding-left: 3px;
+  margin-bottom: -20px;
+  font-size: 14px;
+}
