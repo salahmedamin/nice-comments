@@ -5,7 +5,15 @@ import Hovered from "../HOC/Hovered";
 import WithMenu from "../HOC/WithMenu";
 import { possiblereactions, reactionsBg } from "../static/reactions";
 
-export const PossibleReactions = ({ reactions = {}, menuStyle }) => {
+export const PossibleReactions = ({
+  reactions = {},
+  menuStyle,
+  menuProps = {},
+  onEmojiPress=async()=>undefined,
+  useEmojiBg = true,
+  emojisStyle={},
+  currentEmojiStyle={}
+}) => {
   return (
     <WithMenu
       style={menuStyle}
@@ -19,9 +27,10 @@ export const PossibleReactions = ({ reactions = {}, menuStyle }) => {
               },
               padding: "8px",
             }}
-            onClick={(e) => {
+            onClick={async(e) => {
               e.stopPropagation();
               setopen(false);
+              if(typeof onEmojiPress === "function") await onEmojiPress(possiblereactions[i].toLowerCase())
             }}
           >
             <Avatar
@@ -29,11 +38,13 @@ export const PossibleReactions = ({ reactions = {}, menuStyle }) => {
               style={{
                 width: 20,
                 height: 20,
+                ...emojisStyle
               }}
             />
           </IconButton>
         ))
       }
+      {...menuProps}
     >
       {({ handleClick }) => (
         <div
@@ -43,12 +54,13 @@ export const PossibleReactions = ({ reactions = {}, menuStyle }) => {
           <IconButton
             sx={{
               "&:hover, &.Mui-focusVisible": {
-                backgroundColor:
-                  !!reactions.own && reactions.own.length > 0
-                    ? reactionsBg.find(
-                        (a) => a.name.toLowerCase() === reactions.own
-                      ).bg
-                    : "rgba(217,217,217,.1)",
+                backgroundColor: !useEmojiBg
+                  ? undefined
+                  : !!reactions.own && reactions.own.length > 0
+                  ? reactionsBg.find(
+                      (a) => a.name.toLowerCase() === reactions.own
+                    ).bg
+                  : "rgba(217,217,217,.1)",
               },
               padding: "4px",
               borderRadius: 2,
@@ -60,6 +72,7 @@ export const PossibleReactions = ({ reactions = {}, menuStyle }) => {
                 style={{
                   width: 20,
                   height: 20,
+                  ...currentEmojiStyle
                 }}
               />
             ) : (

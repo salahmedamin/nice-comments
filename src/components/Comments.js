@@ -298,9 +298,9 @@ export const Comments = () => {
     <Grid
       item
       container
-      minHeight={"100%"}
+      // minHeight={"100%"}
       direction="column"
-      maxWidth={isXS ? window.innerWidth : 600}
+      maxWidth={isXS ? "100%" : 600}
       bgcolor="#18191A"
       color="white"
       fontFamily="'Inter', sans-serif"

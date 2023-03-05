@@ -1,11 +1,13 @@
 import { createTheme, ThemeProvider } from "@mui/material";
 import { useMemo } from "react";
+import { Route, Routes } from "react-router";
+import { Comments } from "./components/Comments";
 import { Stories } from "./components/Stories";
 //import { Comments } from "./components/Comments";
 import "./styles.css";
 
 export default function App() {
-  const stateTheme = "dark"
+  const stateTheme = "dark";
   const themeToUse = useMemo(
     () =>
       createTheme({
@@ -19,7 +21,8 @@ export default function App() {
             main: stateTheme === "dark" ? "#18191A" : "#ffffff",
             dark: "#18191A",
             light: "#ffffff",
-            contrastText: stateTheme === "light" ? "#18191A" : "rgb(150,150,150)",
+            contrastText:
+              stateTheme === "light" ? "#18191A" : "rgb(150,150,150)",
           },
           common: {
             black: "#18191A",
@@ -27,9 +30,14 @@ export default function App() {
           },
         },
       }),
-    [stateTheme])
-  return <ThemeProvider theme={themeToUse}>
-    {/* <Comments /> */}
-    <Stories />
-    </ThemeProvider>;
+    [stateTheme]
+  );
+  return (
+    <ThemeProvider theme={themeToUse}>
+      <Routes>
+        <Route path="/stories" element={<Stories />} />
+        <Route path="/feed" element={<Comments />} />
+      </Routes>
+    </ThemeProvider>
+  );
 }
