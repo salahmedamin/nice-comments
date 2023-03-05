@@ -47,6 +47,7 @@ export const Story = React.memo(
       end: musicEnd,
     } = {},
     location = undefined,
+    firstStory = false,
     user: { fName, lName, image: userImage, name: username } = {},
     endOfStoryCb = () => undefined,
     setmain,
@@ -92,7 +93,7 @@ export const Story = React.memo(
     const [circlePercentage, setcirclePercentage] = useState(10);
     const [playing, setplaying] = useState(false);
     const [ownReaction, setownReaction] = useState(reaction);
-    // const [dirty, setdirty] = useState(false); //played at least once
+    const [playedAlready, setplayedAlready] = useState(false); //played at least once
     const hasMusic = useMemo(
       () => musicTitle && musicURL,
       [musicTitle, musicURL]
@@ -158,7 +159,7 @@ export const Story = React.memo(
         }
         return;
       }
-      setplaying(true);
+      if (!firstStory || playedAlready) setplaying(true);
       if (audioRef && audioRef.current && hasMusic) audioRef.current.play();
     }, [isMain, audioRef]);
     //on pause or play, do it, considering loading
@@ -185,10 +186,15 @@ export const Story = React.memo(
       if (normalised === 100 && isMain) endOfStoryCb();
     }, [normalised]);
 
+    const setalreadyplayed = useCallback(() => setplayedAlready(true), []);
     //if story has audio, attach this mf
     useEffect(() => {
       if (!hasMusic || !audioRef || !audioRef.current) return;
+      const audioCopy = audioRef.current
+      audioRef.current.addEventListener("play", setalreadyplayed);
       audioRef.current.currentTime = musicStart;
+      return () =>
+        audioCopy.removeEventListener("play", setalreadyplayed);
     }, [hasMusic, audioRef?.current]);
 
     const storyFabIconProps = useMemo(
@@ -337,7 +343,7 @@ export const Story = React.memo(
               }}
               ref={audioRef}
               src={musicURL}
-              preload="none"
+              // preload="none"
             />
           ) : null}
           {/* A LAYER TO PREVENT DIRECT ACCESS */}
