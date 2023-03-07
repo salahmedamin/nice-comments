@@ -9,7 +9,7 @@ import {
   SlideshowOutlined,
   VisibilityOutlined,
   VolumeOff,
-  VolumeUp
+  VolumeUp,
 } from "@mui/icons-material";
 import {
   Avatar,
@@ -18,18 +18,18 @@ import {
   Grid,
   Stack,
   Tooltip,
-  Typography
+  Typography,
 } from "@mui/material";
 import React, {
   useCallback,
   useEffect,
   useMemo,
   useRef,
-  useState
+  useState,
 } from "react";
 import { useCustomKeyPress, useSpaceKeyPress } from "../../hooks/useKeyPress";
 import { useMediaQuerySizes } from "../../hooks/useMediaQuerySizes";
-import { useScreenWidth } from "../../hooks/useScreenWidth";
+import { useScreenDimension } from "../../hooks/useScreenDimension";
 import { PossibleReactions } from "../Reaction";
 import { CustomFab } from "./CustomFab";
 
@@ -56,11 +56,12 @@ export const Story = React.memo(
     clearMode,
     setclearMode,
     reaction,
+    displayMode,
   }) => {
     //current logged in user
     const currentUserName = "amin._.salah";
     //custom hooks
-    const screenWidth = useScreenWidth();
+    const [screenWidth, screenHeight] = useScreenDimension();
     //react hooks
     const mainWidth = useMemo(
       () =>
@@ -82,8 +83,8 @@ export const Story = React.memo(
       [distanceToMain]
     );
     const usedWidth = useMemo(
-      () => (isMain ? mainWidth : 350),
-      [distanceToMain]
+      () => (isMain ? mainWidth : displayMode === "H" ? 350 : 450),
+      [distanceToMain, displayMode]
     );
     const usedHeight = useMemo(
       () => (isMain ? mainHeight : isNextToMain ? "67%" : "50%"),
@@ -190,11 +191,11 @@ export const Story = React.memo(
     //if story has audio, attach this mf
     useEffect(() => {
       if (!hasMusic || !audioRef || !audioRef.current) return;
-      const audioCopy = audioRef.current
+      const audioCopy = audioRef.current;
       audioRef.current.addEventListener("play", setalreadyplayed);
-      audioRef.current.currentTime = musicStart;
-      return () =>
-        audioCopy.removeEventListener("play", setalreadyplayed);
+      audioRef.current.currentTime =
+        musicStart + (duration * circlePercentage) / 100;
+      return () => audioCopy.removeEventListener("play", setalreadyplayed);
     }, [hasMusic, audioRef?.current]);
 
     const storyFabIconProps = useMemo(
@@ -210,7 +211,6 @@ export const Story = React.memo(
       () => ({
         opacity: clearMode ? 0 : 1,
         visibility: clearMode ? "hidden" : "visible",
-        transition: ".3s ease all",
       }),
       [clearMode]
     );
@@ -221,11 +221,27 @@ export const Story = React.memo(
       [clearMode]
     );
     const { isLG, isMD, isSM, isXS } = useMediaQuerySizes();
-
+    const mainStoryClick = useCallback(() => {
+      if (typeof onMainClick === "function") onMainClick();
+      if (isXS) setplaying((e) => !e);
+    }, [isXS, isMain, playing, onMainClick]);
     return (
       <Grid
-        onClick={isMain ? onMainClick : () => setmain(index)}
+        onClick={isMain ? undefined : () => setmain(index)}
         style={{
+          opacity:
+            (Math.abs(distanceToMain) > 2 && displayMode === "H") ||
+            (Math.abs(distanceToMain) > 1 && displayMode === "V") ||
+            (isXS && !isMain)
+              ? 0
+              : 1,
+          visibility:
+            (Math.abs(distanceToMain) > 2 && displayMode === "H") ||
+            (Math.abs(distanceToMain) > 1 && displayMode === "V") ||
+            (isXS && !isMain)
+              ? "hidden"
+              : "visible",
+          overflow: "hidden",
           minWidth: isMain
             ? isXS
               ? "100%"
@@ -254,25 +270,36 @@ export const Story = React.memo(
                   .join(",")})`,
           cursor: "pointer",
           position: "absolute",
-          top: "50%",
-          transform: "translateY(-50%)",
+          transform:
+            isXS && isMain
+              ? undefined
+              : `translate(-50%${
+                  displayMode === "H" || (displayMode === "V" && isMain)
+                    ? ",-50%"
+                    : ""
+                })`,
           transformOrigin: "left top",
           //if it is main, leave it at mid screen
           // if next to main, midscreen + (distanceToMain*mainWidth) + 60 (spacing)
           left: isXS
             ? 0
-            : `${
-                (screenWidth -
-                  (isMain ? imgRef.current?.offsetWidth : usedWidth)) /
-                  2 +
-                (isMain
-                  ? 0
-                  : distanceToMain *
-                    (isNextToMain ? mainWidth * 0.6 : mainWidth * 0.73)) +
-                "px"
-              }`,
-          // transformOrigin: "center",
-          overflow: !isMain ? "hidden" : undefined,
+            : displayMode === "V" || (displayMode === "H" && isMain)
+            ? "50%"
+            : `calc( 50% + ${
+                distanceToMain *
+                (isNextToMain ? mainWidth * 0.6 : mainWidth * 0.68)
+              }px )`,
+          top: isXS
+            ? 0
+            : displayMode === "H" || (displayMode === "V" && isMain)
+            ? "50%"
+            : distanceToMain < 0 && !isMain && displayMode === "V"
+            ? `-${usedWidth / 2}px`
+            : undefined,
+          bottom:
+            displayMode === "V" && !isMain && distanceToMain > 0
+              ? `-${usedWidth / 2}px`
+              : undefined,
           transition: `.${isXS ? "05" : "15"}s ease`,
           zIndex: isMain ? 1 : undefined,
         }}
@@ -314,6 +341,7 @@ export const Story = React.memo(
         </Box>
         {/* ONLY MAIN THINGS HERE */}
         <div
+          onClick={mainStoryClick}
           style={{
             width: "100%",
             height: "100%",
@@ -379,8 +407,7 @@ export const Story = React.memo(
               translateOnHover={false}
               keepBoxShadow={false}
               style={{
-                ...clearModeSmartHiding,
-                order: clearMode ? 2 : undefined,
+                ...clearModeDefinite,
               }}
             >
               <Tooltip
@@ -417,35 +444,37 @@ export const Story = React.memo(
               style={{
                 width: "auto",
                 borderRadius: 25,
-                order: clearMode ? 1 : undefined,
               }}
               keepBoxShadow={false}
               translateOnHover={false}
             >
               {/* BACK BUTTON */}
-              {!hasMoreLeft ? null : (
-                <CustomFab
-                  keepBoxShadow={false}
-                  translateOnHover={false}
-                  style={{
-                    ...clearModeDefinite,
-                    background: "transparent",
-                  }}
-                  onClick={() =>
-                    !hasMoreLeft ? undefined : setmain((e) => e - 1)
-                  }
-                >
-                  <ArrowBackOutlined {...storyFabIconProps} />
-                </CustomFab>
-              )}
+              <CustomFab
+                keepBoxShadow={false}
+                translateOnHover={false}
+                style={{
+                  background: "transparent",
+                }}
+                onClick={() =>
+                  !hasMoreLeft ? undefined : setmain((e) => e - 1)
+                }
+              >
+                <ArrowBackOutlined
+                  {...storyFabIconProps}
+                  htmlColor={!hasMoreLeft ? "grey" : "white"}
+                />
+              </CustomFab>
               {/* PROGRESS CIRCLE */}
-              <Stack
+              <CustomFab
+                translateOnHover={false}
+                keepBoxShadow={false}
                 style={{
                   width: 35,
                   height: 35,
                   position: "relative",
                   alignItems: "center",
                   justifyContent: "center",
+                  background: "transparent",
                 }}
               >
                 <CircularProgress
@@ -476,26 +505,24 @@ export const Story = React.memo(
                     <PlayArrow style={{ fontSize: "14px", color: "white" }} />
                   )}
                 </Box>
-              </Stack>
+              </CustomFab>
               {/* NEXT BUTTON */}
-              {!hasMoreRight ? null : (
-                <CustomFab
-                  keepBoxShadow={false}
-                  translateOnHover={false}
-                  style={{
-                    ...clearModeDefinite,
-                    background: "transparent",
-                  }}
-                  onClick={() =>
-                    !hasMoreRight ? undefined : setmain((e) => e + 1)
-                  }
-                >
-                  <ArrowBackOutlined
-                    {...storyFabIconProps}
-                    style={{ transform: "rotate(180deg)" }}
-                  />
-                </CustomFab>
-              )}
+              <CustomFab
+                keepBoxShadow={false}
+                translateOnHover={false}
+                style={{
+                  background: "transparent",
+                }}
+                onClick={() =>
+                  !hasMoreRight ? undefined : setmain((e) => e + 1)
+                }
+              >
+                <ArrowBackOutlined
+                  {...storyFabIconProps}
+                  htmlColor={!hasMoreRight ? "grey" : "white"}
+                  style={{ transform: "rotate(180deg)" }}
+                />
+              </CustomFab>
             </CustomFab>
             {/* MORE OPTIONS */}
             <CustomFab
@@ -513,7 +540,7 @@ export const Story = React.memo(
             justifyContent="center"
             position="absolute"
             right={10}
-            bottom={10}
+            bottom={isXS ? 60 : 10}
             spacing={1}
             style={clearModeSmartHiding}
           >
@@ -575,7 +602,7 @@ export const Story = React.memo(
                 justifyContent: "center",
                 position: "absolute",
                 left: 10,
-                bottom: 10,
+                bottom: isXS ? 60 : 10,
               }}
               translateOnHover={false}
               onClick={() => setmuted((e) => !e)}
@@ -594,9 +621,11 @@ export const Story = React.memo(
               alignItems: "center",
               justifyContent: "center",
               position: "absolute",
-              left: !hasMusic ? 10 : "50%",
-              transform: !hasMusic ? undefined : "translateX(-50%)",
-              bottom: 10,
+              left: !hasMusic ? 10 : !clearMode ? "50%" : undefined,
+              right: hasMusic && clearMode ? 10 : undefined,
+              transform:
+                hasMusic && !clearMode ? "translateX(-50%)" : undefined,
+              bottom: isXS ? 60 : 10,
             }}
             onClick={() => setclearMode((e) => !e)}
             translateOnHover={false}
