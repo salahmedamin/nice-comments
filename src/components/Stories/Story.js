@@ -66,7 +66,7 @@ export const Story = React.memo(
     const mainWidth = useMemo(
       () =>
         loading
-          ? 460
+          ? 500
           : imgRef?.current
           ? imgRef.current.offsetWidth
           : screenWidth < 496
@@ -74,7 +74,7 @@ export const Story = React.memo(
           : 496,
       [screenWidth, imgRef, loading]
     );
-    const mainHeight = useMemo(() => 678, []);
+    const mainHeight = useMemo(() => 700, []);
 
     const distanceToMain = useMemo(() => index - mainIndex, [index, mainIndex]);
     const isMain = useMemo(() => distanceToMain === 0, [distanceToMain]);
@@ -87,7 +87,7 @@ export const Story = React.memo(
       [distanceToMain, displayMode]
     );
     const usedHeight = useMemo(
-      () => (isMain ? mainHeight : isNextToMain ? "67%" : "50%"),
+      () => (isMain ? mainHeight : isNextToMain ? "65%" : "50%"),
       [distanceToMain, screenWidth]
     );
     const normalise = useCallback((value) => (value < 100 ? value : 100), []);
@@ -280,7 +280,7 @@ export const Story = React.memo(
                 })`,
           transformOrigin: "left top",
           //if it is main, leave it at mid screen
-          // if next to main, midscreen + (distanceToMain*mainWidth) + 60 (spacing)
+          // if next to main, relative to main
           left: isXS
             ? 0
             : displayMode === "V" || (displayMode === "H" && isMain)
@@ -301,7 +301,7 @@ export const Story = React.memo(
               ? `-${usedWidth / 2}px`
               : undefined,
           transition: `.${isXS ? "05" : "15"}s ease`,
-          zIndex: isMain ? 1 : undefined,
+          zIndex: isMain ? 3 : isNextToMain ? 2 : 1,
         }}
         item
       >
@@ -321,12 +321,13 @@ export const Story = React.memo(
           {/* <ColorExtractor getColors={(colors) => setcolors(colors)}> */}
           <img
             style={{
+              scale: !isMain || isXS ? 1.5 : undefined,
               width: !isMain || isXS ? "100%" : undefined,
               height: "100%",
               objectFit: !isMain || isXS ? "cover" : undefined,
               // visibility: "hidden"
               // aspectRatio: "4:3",
-              // transition: ".4s ease all"
+              transition: ".3s ease all",
             }}
             onLoad={() => {
               setmediasloading((e) => ({
@@ -363,6 +364,7 @@ export const Story = React.memo(
           {/* AUDIO PLAYER */}
           {isMain && hasMusic ? (
             <audio
+              autoPlay={false}
               onSeeked={() => {
                 setmediasloading((e) => ({
                   ...e,

@@ -1,6 +1,10 @@
 import { Stack } from "@mui/material";
-import React, { useEffect, useMemo, useState } from "react";
-import { useLeftKeyPress, useRightKeyPress } from "../hooks/useKeyPress";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  useCustomKeyPress,
+  useLeftKeyPress,
+  useRightKeyPress,
+} from "../hooks/useKeyPress";
 import { Story } from "./Stories/Story";
 import axios from "axios";
 
@@ -112,6 +116,11 @@ export const Stories = () => {
     main < stories.length - 1 ? setmain((e) => e + 1) : undefined
   );
   const [displayMode, setdisplayMode] = useState("V"); //V or H
+  const toggleDisplayMode = useCallback(
+    () => setdisplayMode((e) => (e === "H" ? "V" : "H")),
+    [displayMode]
+  );
+  useCustomKeyPress("d", toggleDisplayMode);
   return loading ? (
     "LOADING..."
   ) : (
@@ -130,7 +139,7 @@ export const Stories = () => {
       {/* to align items at center */}
       <Stack direction={"row"} flexGrow={1} width="100%" position="relative">
         <div
-          onClick={() => setdisplayMode((e) => (e === "H" ? "V" : "H"))}
+          onClick={toggleDisplayMode}
           style={{
             position: "absolute",
             top: 5,
