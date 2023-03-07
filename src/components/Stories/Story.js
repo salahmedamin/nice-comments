@@ -9,7 +9,7 @@ import {
   SlideshowOutlined,
   VisibilityOutlined,
   VolumeOff,
-  VolumeUp,
+  VolumeUp
 } from "@mui/icons-material";
 import {
   Avatar,
@@ -18,16 +18,15 @@ import {
   Grid,
   Stack,
   Tooltip,
-  Typography,
+  Typography
 } from "@mui/material";
 import React, {
   useCallback,
   useEffect,
   useMemo,
   useRef,
-  useState,
+  useState
 } from "react";
-import { ColorExtractor } from "react-color-extractor";
 import { useDrag } from "../../hooks/useDrag";
 import { useCustomKeyPress, useSpaceKeyPress } from "../../hooks/useKeyPress";
 import { useMediaQuerySizes } from "../../hooks/useMediaQuerySizes";
@@ -237,17 +236,18 @@ export const Story = React.memo(
       isRight,
       isTop,
     } = useDrag(storyRef);
-    // useEffect(() => {
-    //   console.log(
-    //     `toLeft: ${toLeft}, toBottom: ${toBottom}, toRight: ${toRight}, toTop: ${toTop},isBottom: ${isBottom}, isLeft:${isLeft},isRight: ${isRight},isTop:${isTop}`
-    //   );
-    // }, [isDragging, currentPosition]);
+    useEffect(() => {
+      console.log(
+        `toLeft: ${toLeft}, toBottom: ${toBottom}, toRight: ${toRight}, toTop: ${toTop},isBottom: ${isBottom}, isLeft:${isLeft},isRight: ${isRight},isTop:${isTop}`
+      );
+    }, [isDragging, currentPosition]);
     const mainStoryClick = useCallback(() => {
       if (typeof onMainClick === "function") onMainClick();
       if (isXS) setplaying((e) => !e);
     }, [isXS, isMain, playing, onMainClick]);
     return (
       <Grid
+        ref={storyRef}
         onClick={isMain ? undefined : () => setmain(index)}
         style={{
           opacity:

@@ -47,21 +47,27 @@ export const useDrag = (dragged, direction_threshold = 60) => {
     if (!dragged?.current) return;
     // dragged.current.draggable = true;
     const copy = dragged.current;
-    dragged.current.addEventListener("mousedown", initDrag);
-    dragged.current.addEventListener("touchstart", initDrag);
+    //body
     document.body.addEventListener("mouseup", dragEnd);
     document.body.addEventListener("touchend", dragEnd);
+    document.body.addEventListener("mousemove", dragging);
+    //ref
+    dragged.current.addEventListener("mousedown", initDrag);
+    dragged.current.addEventListener("touchstart", initDrag);
     dragged.current.addEventListener("mouseup", dragEnd);
     dragged.current.addEventListener("touchend", dragEnd);
-    document.body.addEventListener("mousemove", dragging);
+    dragged.current.addEventListener("mousemove", dragging);
     return () => {
-      copy.removeEventListener("mousedown", initDrag);
-      copy.removeEventListener("touchstart", initDrag);
+      //body 
       document.body.removeEventListener("mouseup", dragEnd);
       document.body.removeEventListener("touchend", dragEnd);
+      document.body.removeEventListener("mousemove", dragging);
+      //ref
+      copy.removeEventListener("mousedown", initDrag);
+      copy.removeEventListener("touchstart", initDrag);
       copy.removeEventListener("mouseup", dragEnd);
       copy.removeEventListener("touchend", dragEnd);
-      document.body.removeEventListener("mousemove", dragging);
+      copy.removeEventListener("mousemove", dragging);
     };
   }, [dragged]);
   return {
