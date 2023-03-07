@@ -27,6 +27,8 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { ColorExtractor } from "react-color-extractor";
+import { useDrag } from "../../hooks/useDrag";
 import { useCustomKeyPress, useSpaceKeyPress } from "../../hooks/useKeyPress";
 import { useMediaQuerySizes } from "../../hooks/useMediaQuerySizes";
 import { useScreenDimension } from "../../hooks/useScreenDimension";
@@ -121,6 +123,7 @@ export const Story = React.memo(
           : undefined,
       [circlePercentage, playing]
     );
+    const storyRef = useRef(null);
     const imgRef = useRef(null);
     const audioRef = useRef(null);
     //on mute, mute audio
@@ -221,6 +224,24 @@ export const Story = React.memo(
       [clearMode]
     );
     const { isLG, isMD, isSM, isXS } = useMediaQuerySizes();
+    const {
+      currentPosition,
+      isDragging,
+      mouseDragStart,
+      toLeft,
+      toBottom,
+      toRight,
+      toTop,
+      isBottom,
+      isLeft,
+      isRight,
+      isTop,
+    } = useDrag(storyRef);
+    // useEffect(() => {
+    //   console.log(
+    //     `toLeft: ${toLeft}, toBottom: ${toBottom}, toRight: ${toRight}, toTop: ${toTop},isBottom: ${isBottom}, isLeft:${isLeft},isRight: ${isRight},isTop:${isTop}`
+    //   );
+    // }, [isDragging, currentPosition]);
     const mainStoryClick = useCallback(() => {
       if (typeof onMainClick === "function") onMainClick();
       if (isXS) setplaying((e) => !e);
@@ -281,7 +302,9 @@ export const Story = React.memo(
           transformOrigin: "left top",
           //if it is main, leave it at mid screen
           // if next to main, relative to main
-          left: isXS
+          left: isDragging && isMain
+              ? currentPosition.x - usedWidth / 2 :
+              isXS
             ? 0
             : displayMode === "V" || (displayMode === "H" && isMain)
             ? "50%"
@@ -406,6 +429,7 @@ export const Story = React.memo(
           >
             {/* USER PROFILE */}
             <CustomFab
+              absorbEvent={true}
               translateOnHover={false}
               keepBoxShadow={false}
               style={{
@@ -443,6 +467,7 @@ export const Story = React.memo(
             </CustomFab>
             {/* HOLDER OF NEXT, PREV AND PLAY/PAUSE */}
             <CustomFab
+              absorbEvent={true}
               style={{
                 width: "auto",
                 borderRadius: 25,
@@ -528,6 +553,7 @@ export const Story = React.memo(
             </CustomFab>
             {/* MORE OPTIONS */}
             <CustomFab
+              absorbEvent={true}
               keepBoxShadow={false}
               translateOnHover={false}
               style={clearModeDefinite}
@@ -548,7 +574,7 @@ export const Story = React.memo(
           >
             {/* MUSIC */}
             {musicTitle && musicURL ? (
-              <CustomFab>
+              <CustomFab absorbEvent={true}>
                 <MusicNoteOutlined
                   {...storyFabIconProps}
                   style={{
@@ -559,13 +585,13 @@ export const Story = React.memo(
               </CustomFab>
             ) : null}
             {currentUserName === username ? (
-              <CustomFab>
+              <CustomFab absorbEvent={true}>
                 <VisibilityOutlined {...storyFabIconProps} />
               </CustomFab>
             ) : (
               <>
                 {/* REACTIONS */}
-                <CustomFab>
+                <CustomFab absorbEvent={true}>
                   <PossibleReactions
                     onEmojiPress={(emoji) => setownReaction(emoji)}
                     useEmojiBg={false}
@@ -589,7 +615,7 @@ export const Story = React.memo(
                   />
                 </CustomFab>
                 {/* REPLY */}
-                <CustomFab>
+                <CustomFab absorbEvent={true}>
                   <ReplyOutlined {...storyFabIconProps} />
                 </CustomFab>
               </>
@@ -598,6 +624,7 @@ export const Story = React.memo(
           {/* MUTE BUTTON */}
           {!hasMusic ? null : (
             <CustomFab
+              absorbEvent={true}
               style={{
                 direction: "column",
                 alignItems: "center",
@@ -618,6 +645,7 @@ export const Story = React.memo(
           )}
           {/* CLEAR MODE */}
           <CustomFab
+            absorbEvent={true}
             style={{
               direction: "column",
               alignItems: "center",

@@ -8,6 +8,7 @@ export const CustomFab = ({
   hoverStyle,
   translateOnHover = true,
   keepBoxShadow = true,
+  absorbEvent = false,
   ...props
 }) => {
   const fabRef = useRef(null);

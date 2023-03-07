@@ -5,6 +5,7 @@ import {
   useLeftKeyPress,
   useRightKeyPress,
 } from "../hooks/useKeyPress";
+
 import { Story } from "./Stories/Story";
 import axios from "axios";
 
@@ -21,9 +22,7 @@ export const Stories = () => {
         .then((e) =>
           setsongs((prev) => [...prev, { id: song, url: e.data.url }])
         );
-      console.log(songs);
     }
-    console.log(songs);
   }, []);
   //on songs length change, check if songs_ids.length === songs.length => LOADING COMPLETE
   useEffect(() => {
