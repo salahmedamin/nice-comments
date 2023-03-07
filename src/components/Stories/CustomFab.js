@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useHover } from "usehooks-ts";
 
 export const CustomFab = ({
@@ -13,16 +13,15 @@ export const CustomFab = ({
 }) => {
   const fabRef = useRef(null);
   const hovered = useHover(fabRef);
-  // const absorbE = useCallback((e) => e.stopPropagation(), []);
 
   // useEffect(() => {
-  //   if(!fabRef?.current || !absorbEvent) return
-  //   const copy = fabRef.current;
-  //   fabRef.current.addEventListener("click", absorbE)
-  //   return () => {
-  //     copy.removeEventListener("click", absorbE);
-  //   };
-  // }, []);
+  //   if (!fabRef?.current) return;
+  //   const fabCopy = fabRef.current;
+  //   const stopPropag = (e) => e.stopPropagation();
+  //   fabRef.current.addEventListener("click", stopPropag);
+  //   return () => fabCopy.removeEventListener("click", stopPropag);
+  // }, [fabRef]);
+
   return (
     <Box
       // size={"small"}

@@ -1,8 +1,13 @@
 import { Stack } from "@mui/material";
-import axios from "axios";
-import React, { useEffect, useMemo, useState } from "react";
-import { useLeftKeyPress, useRightKeyPress } from "../hooks/useKeyPress";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  useCustomKeyPress,
+  useLeftKeyPress,
+  useRightKeyPress,
+} from "../hooks/useKeyPress";
+
 import { Story } from "./Stories/Story";
+import axios from "axios";
 
 export const Stories = () => {
   const [songs, setsongs] = useState([]);
@@ -109,6 +114,12 @@ export const Stories = () => {
   useRightKeyPress(() =>
     main < stories.length - 1 ? setmain((e) => e + 1) : undefined
   );
+  const [displayMode, setdisplayMode] = useState("V"); //V or H
+  const toggleDisplayMode = useCallback(
+    () => setdisplayMode((e) => (e === "H" ? "V" : "H")),
+    [displayMode]
+  );
+  useCustomKeyPress("d", toggleDisplayMode);
   return loading ? (
     "LOADING..."
   ) : (
@@ -126,11 +137,27 @@ export const Stories = () => {
       {/* <UserStoryBadge top /> */}
       {/* to align items at center */}
       <Stack direction={"row"} flexGrow={1} width="100%" position="relative">
+        <div
+          onClick={toggleDisplayMode}
+          style={{
+            position: "absolute",
+            top: 5,
+            left: 5,
+            color: "white",
+            cursor: "pointer",
+            border: "1px solid white",
+            borderRadius: 25,
+            padding: 5,
+          }}
+        >
+          Toggle display mode: {displayMode}
+        </div>
         {stories.map((story, e) => (
           <Story
             //   onMainClick={() => {
             //     if (main < 6) setmain(main + 1);
             //   }}
+            displayMode={displayMode}
             firstStory={e === 0}
             clearMode={clearMode}
             setclearMode={setclearMode}

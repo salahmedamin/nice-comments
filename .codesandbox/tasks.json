@@ -40,6 +40,14 @@
     "npm i react-perfect-scrollbar --force": {
       "name": "npm i react-perfect-scrollbar --force",
       "command": "npm i react-perfect-scrollbar --force"
+    },
+    "npm i axios": {
+      "name": "npm i axios",
+      "command": "npm i axios"
+    },
+    "npm i axios --force": {
+      "name": "npm i axios --force",
+      "command": "npm i axios --force"
     }
   }
 }
