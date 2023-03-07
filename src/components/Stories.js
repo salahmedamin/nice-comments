@@ -1,9 +1,28 @@
 import { Stack } from "@mui/material";
-import React, { useMemo, useState } from "react";
+import axios from "axios";
+import React, { useEffect, useMemo, useState } from "react";
 import { useLeftKeyPress, useRightKeyPress } from "../hooks/useKeyPress";
 import { Story } from "./Stories/Story";
 
 export const Stories = () => {
+  const [songs, setsongs] = useState([]);
+  const songs_ids = useMemo(() => ["ogdsnIWGqt4", "CY8E6N5Nzec"], []);
+  const [loading, setloading] = useState(true);
+  //on initial load, load all songs playing URL
+  useEffect(() => {
+    const fetchURL = "https://l7xtog-3000.preview.csb.app/stream/";
+    for (const song of songs_ids) {
+      axios
+        .get(fetchURL + song)
+        .then((e) =>
+          setsongs((prev) => [...prev, { id: song, url: e.data.url }])
+        );
+    }
+  }, []);
+  //on songs length change, check if songs_ids.length === songs.length => LOADING COMPLETE
+  useEffect(() => {
+    if (songs_ids.length === songs.length) setloading(false);
+  }, [songs, songs_ids]);
   const [main, setmain] = useState(0);
   const [clearMode, setclearMode] = useState(false);
   const ena = useMemo(
@@ -25,7 +44,6 @@ export const Stories = () => {
     }),
     []
   );
-  // const songs = ["ogdsnIWGqt4","CY8E6N5Nzec"]
   const stories = useMemo(
     () => [
       {
@@ -34,11 +52,12 @@ export const Stories = () => {
         duration: 60,
         mediaURL:
           "https://fashiontravelrepeat.com/wp-content/uploads/2020/09/Travel-Instagram-Story-Tutorial-Idea-576x1024.jpg",
-        music:{
+        music: {
           start: 22,
-          title: "Enjoy Your Day 🍂 Chill songs to make you feel positive and calm ~ morning songs",
-          url: "https://rr1---sn-4g5edndr.googlevideo.com/videoplayback?expire=1678073620&ei=tAoFZOW_FpSsgAe9s4v4Cg&ip=167.235.8.246&id=o-AJYZ09VD3qLB5b2wp1sKRB9a6QltvGArW27T3cr2C7Gq&itag=251&source=youtube&requiressl=yes&mh=SS&mm=31%2C26&mn=sn-4g5edndr%2Csn-f5f7lnee&ms=au%2Conr&mv=u&mvi=1&pl=25&pcm2=yes&vprv=1&mime=audio%2Fwebm&ns=O8mLGgF78lFxweD211MCGSEL&gir=yes&clen=1507439816&dur=86400.041&lmt=1668117028995383&mt=1678050676&fvip=1&keepalive=yes&fexp=24007246&beids=24472394&c=WEB&txp=5532434&n=V_zdto3ooNWLEw&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cpcm2%2Cvprv%2Cmime%2Cns%2Cgir%2Cclen%2Cdur%2Clmt&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl&lsig=AG3C_xAwRgIhAJFVappXo_xFV67p9dkSl0PbscReCQpTLFFeNKdQyX9eAiEAoJ2wGsWU6ho9gZL0DcMXezdydagtjTJ37X7gJSe1Leg%3D&sig=AOq0QJ8wRQIhAKjW3NJPPuO8qLcqCpVrgcXKRFErNk3eIlQcfNfFzqLdAiAfBNZSx9KsUXEaLrD9SS6HBN-MdANE_Gxj5HJXcYPNFQ%3D%3D"
-        }
+          title:
+            "Enjoy Your Day 🍂 Chill songs to make you feel positive and calm ~ morning songs",
+          url: songs.find((e) => e.id === "ogdsnIWGqt4")?.url,
+        },
       },
       {
         user: ena,
@@ -47,11 +66,11 @@ export const Stories = () => {
           "https://foreveramber.co.uk/wp-content/uploads/2014/07/beach-sunset.jpg",
       },
       {
-        user: ena,
+        user: chahin,
         music: {
           title:
             "Marshmello & Anne-Marie - FRIENDS (Lyric Video) *OFFICIAL FRIENDZONE ANTHEM*",
-          url: "https://rr2---sn-4g5lzned.googlevideo.com/videoplayback?expire=1678070094&ei=7vwEZO-eLa7Sx_APp4uUcA&ip=167.235.8.246&id=o-ADW_Oc6kFR66AOv2EryN7by1bvGonwWlJc8vroxewFHP&itag=251&source=youtube&requiressl=yes&mh=dg&mm=31%2C26&mn=sn-4g5lzned%2Csn-f5f7knee&ms=au%2Conr&mv=m&mvi=2&pl=25&initcwndbps=247500&vprv=1&mime=audio%2Fwebm&ns=IKEiMU_6GnEnARuCUAMh8lUL&gir=yes&clen=3320559&dur=205.541&lmt=1672232994318871&mt=1678048146&fvip=2&keepalive=yes&fexp=24007246&c=WEB&txp=4532434&n=h665g5yme-jqTQ&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cvprv%2Cmime%2Cns%2Cgir%2Cclen%2Cdur%2Clmt&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Cinitcwndbps&lsig=AG3C_xAwRAIgRjCarlk5lTy9HNhu4bhhpCjGv3T35kpNLWeamh-ni4YCIGinFeEbLKrmsEbZNurRezSzKqDQG6Ld6xRwsCKSwDdm&sig=AOq0QJ8wRAIgAKZx0EXtXDgwDQrW1s903-NKic7yOB9Mkq1IZm61mAoCIFDMCogmGpsjpHed5tkILYS0tQhR_3dTeaar9i_6J7tE",
+          url: songs.find((e) => e.id === "CY8E6N5Nzec")?.url,
           start: 60,
         },
         duration: 30,
@@ -83,14 +102,16 @@ export const Stories = () => {
           "https://kindnessblogdotcom1.files.wordpress.com/2013/10/bmhry9ocyaaj6et-large.jpg",
       },
     ],
-    []
+    [songs]
   );
   //custom hooks
   useLeftKeyPress(() => (main > 0 ? setmain((e) => e - 1) : undefined));
   useRightKeyPress(() =>
     main < stories.length - 1 ? setmain((e) => e + 1) : undefined
   );
-  return (
+  return loading ? (
+    "LOADING..."
+  ) : (
     <Stack
       direction={"column"}
       justifyContent="space-between"

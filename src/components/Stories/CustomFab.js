@@ -7,17 +7,30 @@ export const CustomFab = ({
   style,
   hoverStyle,
   translateOnHover = true,
-  keepBoxShadow=true,
+  keepBoxShadow = true,
+  absorbEvent = false,
   ...props
 }) => {
   const fabRef = useRef(null);
   const hovered = useHover(fabRef);
+  // const absorbE = useCallback((e) => e.stopPropagation(), []);
+
+  // useEffect(() => {
+  //   if(!fabRef?.current || !absorbEvent) return
+  //   const copy = fabRef.current;
+  //   fabRef.current.addEventListener("click", absorbE)
+  //   return () => {
+  //     copy.removeEventListener("click", absorbE);
+  //   };
+  // }, []);
   return (
     <Box
       // size={"small"}
       ref={fabRef}
       sx={{
-        boxShadow: !keepBoxShadow ? undefined :  "0px 0px 5px .5px rgb(0,0,0,.8)",
+        boxShadow: !keepBoxShadow
+          ? undefined
+          : "0px 0px 5px .5px rgb(0,0,0,.8)",
         background: "rgb(0,0,0,.5)",
         width: 35,
         height: 35,
