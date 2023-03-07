@@ -10,7 +10,7 @@ export const useDrag = (dragged, direction_threshold = 60) => {
       setcounter(
         setTimeout(() => {
           setisDragging(true);
-          document.body.style.cursor = "pointer"
+          document.body.style.cursor = "pointer";
           setmouseStartXY({
             x: e.clientX,
             y: e.clientY,
@@ -36,7 +36,7 @@ export const useDrag = (dragged, direction_threshold = 60) => {
       clearInterval(counter);
       setTimeout(() => {
         dragging(e);
-        document.body.style.cursor = "default"
+        document.body.style.cursor = "default";
         setisDragging(false);
       }, 40);
     },
@@ -58,7 +58,7 @@ export const useDrag = (dragged, direction_threshold = 60) => {
     dragged.current.addEventListener("touchend", dragEnd);
     dragged.current.addEventListener("mousemove", dragging);
     return () => {
-      //body 
+      //body
       document.body.removeEventListener("mouseup", dragEnd);
       document.body.removeEventListener("touchend", dragEnd);
       document.body.removeEventListener("mousemove", dragging);
@@ -72,27 +72,40 @@ export const useDrag = (dragged, direction_threshold = 60) => {
   }, [dragged]);
   return {
     isDragging,
-    mouseDragStart: mouseStartXY,
-    currentPosition: mouseXY,
-    toLeft:
-      mouseStartXY.x - mouseXY.x > direction_threshold
-        ? mouseStartXY.x - mouseXY.x
-        : 0,
-    toRight:
-      mouseXY.x - mouseStartXY.x > direction_threshold
-        ? mouseXY.x - mouseStartXY.x
-        : 0,
-    toTop:
-      mouseStartXY.y - mouseXY.y > direction_threshold
-        ? mouseStartXY.y - mouseXY.y
-        : 0,
-    toBottom:
-      mouseXY.y - mouseStartXY.y > direction_threshold
-        ? mouseXY.y - mouseStartXY.y
-        : 0,
-    isLeft: mouseStartXY.x - mouseXY.x > direction_threshold,
-    isRight: mouseXY.x - mouseStartXY.x > direction_threshold,
-    isTop: mouseStartXY.y - mouseXY.y > direction_threshold,
-    isBottom: mouseXY.y - mouseStartXY.y > direction_threshold,
+    mouseDragStart: !isDragging ? {} : mouseStartXY,
+    currentPosition: !isDragging ? {} : mouseXY,
+    toLeft: !isDragging
+      ? undefined
+      : mouseStartXY.x - mouseXY.x > direction_threshold
+      ? mouseStartXY.x - mouseXY.x
+      : 0,
+    toRight: !isDragging
+      ? undefined
+      : mouseXY.x - mouseStartXY.x > direction_threshold
+      ? mouseXY.x - mouseStartXY.x
+      : 0,
+    toTop: !isDragging
+      ? undefined
+      : mouseStartXY.y - mouseXY.y > direction_threshold
+      ? mouseStartXY.y - mouseXY.y
+      : 0,
+    toBottom: !isDragging
+      ? undefined
+      : mouseXY.y - mouseStartXY.y > direction_threshold
+      ? mouseXY.y - mouseStartXY.y
+      : 0,
+    isLeft: !isDragging
+      ? undefined
+      : mouseStartXY.x - mouseXY.x > direction_threshold,
+    isRight: !isDragging
+      ? undefined
+      : mouseXY.x - mouseStartXY.x > direction_threshold,
+    isTop: !isDragging
+      ? undefined
+      : mouseStartXY.y - mouseXY.y > direction_threshold,
+    isBottom: !isDragging
+      ? undefined
+      : mouseXY.y - mouseStartXY.y > direction_threshold,
+      cancelDrag: ()=>setisDragging(false)
   };
 };

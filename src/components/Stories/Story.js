@@ -235,11 +235,13 @@ export const Story = React.memo(
       isLeft,
       isRight,
       isTop,
+      cancelDrag
     } = useDrag(storyRef);
     useEffect(() => {
-      console.log(
-        `toLeft: ${toLeft}, toBottom: ${toBottom}, toRight: ${toRight}, toTop: ${toTop},isBottom: ${isBottom}, isLeft:${isLeft},isRight: ${isRight},isTop:${isTop}`
-      );
+      // console.log(
+      //   `toLeft: ${toLeft}, toBottom: ${toBottom}, toRight: ${toRight}, toTop: ${toTop},isBottom: ${isBottom}, isLeft:${isLeft},isRight: ${isRight},isTop:${isTop}`
+      // );
+      if(isLeft) cancelDrag()
     }, [isDragging, currentPosition]);
     const mainStoryClick = useCallback(() => {
       if (typeof onMainClick === "function") onMainClick();
@@ -303,7 +305,7 @@ export const Story = React.memo(
           //if it is main, leave it at mid screen
           // if next to main, relative to main
           left: isDragging && isMain
-              ? currentPosition.x - usedWidth / 2 :
+              ? currentPosition.x - (usedWidth / 6) :
               isXS
             ? 0
             : displayMode === "V" || (displayMode === "H" && isMain)
